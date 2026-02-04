@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear loading message
       activitiesList.innerHTML = "";
 
+      // Reset select (keeps a placeholder)
+      activitySelect.innerHTML = '<option value="" disabled selected>Selecione uma atividade</option>';
+
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
         const activityCard = document.createElement("div");
@@ -21,11 +24,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const spotsLeft = details.max_participants - details.participants.length;
 
         activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <h4 style="margin:0 0 6px 0;">${name}</h4>
+          <p style="margin:0 0 6px 0;">${details.description}</p>
+          <p style="margin:0 0 6px 0;"><strong>Horário:</strong> ${details.schedule}</p>
+          <p style="margin:0 0 8px 0;"><strong>Vagas:</strong> ${spotsLeft} restantes</p>
         `;
+
+        // Participants section (prettified with small inline styles)
+        const participantsDiv = document.createElement("div");
+        participantsDiv.className = "participants-section";
+        participantsDiv.style.marginTop = "8px";
+
+        const participantsTitle = document.createElement("h5");
+        participantsTitle.textContent = "Participantes";
+        participantsTitle.style.margin = "0 0 4px 0";
+        participantsTitle.style.fontSize = "0.95em";
+
+        const participantsListEl = document.createElement("ul");
+        participantsListEl.className = "participants-list";
+        participantsListEl.style.paddingLeft = "20px";
+        participantsListEl.style.margin = "0";
+
+        if (Array.isArray(details.participants) && details.participants.length > 0) {
+          details.participants.forEach((p) => {
+            const li = document.createElement("li");
+            li.textContent = p;
+            li.style.marginBottom = "2px";
+            participantsListEl.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.textContent = "Nenhum participante ainda.";
+          li.style.fontStyle = "italic";
+          participantsListEl.appendChild(li);
+        }
+
+        participantsDiv.appendChild(participantsTitle);
+        participantsDiv.appendChild(participantsListEl);
+        activityCard.appendChild(participantsDiv);
 
         activitiesList.appendChild(activityCard);
 
