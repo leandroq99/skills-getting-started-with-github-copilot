@@ -58,11 +58,12 @@ section h3 {
 }
 
 .activity-card {
-  margin-bottom: 15px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  background: #fff;
+  border: 1px solid #e6e9ef;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(20, 24, 40, 0.04);
 }
 
 .activity-card h4 {
@@ -70,8 +71,120 @@ section h3 {
   color: #0066cc;
 }
 
-.activity-card p {
-  margin-bottom: 8px;
+.activity-title {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+  color: #0f1724;
+}
+
+.activity-desc {
+  margin: 0 0 6px 0;
+  color: #334155;
+}
+
+.activity-schedule,
+.activity-spots {
+  margin: 0 0 6px 0;
+  color: #475569;
+}
+
+.participants-section {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #eef2ff;
+}
+
+.participants-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.participants-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #0f1724;
+}
+
+.participant-count {
+  background: #eef2ff;
+  color: #1e3a8a;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0f1724;
+  justify-content: space-between;
+}
+
+.participant-item > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.avatar-badge {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex: 0 0 32px;
+}
+
+.participant-name {
+  font-size: 0.95rem;
+  color: #0f1724;
+}
+
+.no-participants {
+  font-style: italic;
+  color: #64748b;
+  padding-left: 2px;
+}
+
+.delete-btn {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.delete-btn:hover {
+  background-color: #c53030;
 }
 
 .form-group {

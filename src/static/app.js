@@ -4,6 +4,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // Function to handle participant deletion
+  async function handleDeleteParticipant(activityName, participantEmail) {
+    if (!confirm(`Tem certeza que deseja remover ${participantEmail}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/activities/${encodeURIComponent(activityName)}/unregister?email=${encodeURIComponent(participantEmail)}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (response.ok) {
+        // Refresh activities list
+        fetchActivities();
+      } else {
+        const result = await response.json();
+        alert("Erro ao remover participante: " + (result.detail || "Erro desconhecido"));
+      }
+    } catch (error) {
+      alert("Falha ao remover participante. Por favor, tente novamente.");
+      console.error("Error deleting participant:", error);
+    }
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -13,6 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear loading message
       activitiesList.innerHTML = "";
 
+      // Reset select (keeps a placeholder)
+      activitySelect.innerHTML = '<option value="" disabled selected>Selecione uma atividade</option>';
+
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
         const activityCard = document.createElement("div");
@@ -21,11 +51,76 @@ document.addEventListener("DOMContentLoaded", () => {
         const spotsLeft = details.max_participants - details.participants.length;
 
         activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <h4 class="activity-title">${name}</h4>
+          <p class="activity-desc">${details.description}</p>
+          <p class="activity-schedule"><strong>Horário:</strong> ${details.schedule}</p>
+          <p class="activity-spots"><strong>Vagas:</strong> ${spotsLeft} restantes</p>
         `;
+
+        // Participants section (uses CSS classes for styling)
+        const participantsDiv = document.createElement("div");
+        participantsDiv.className = "participants-section";
+
+        const participantsHeader = document.createElement("div");
+        participantsHeader.className = "participants-header";
+        participantsHeader.innerHTML = `
+          <h5 class="participants-title">Participantes</h5>
+          <span class="participant-count">${Array.isArray(details.participants) ? details.participants.length : 0}</span>
+        `;
+
+        const participantsListEl = document.createElement("ul");
+        participantsListEl.className = "participants-list";
+
+        if (Array.isArray(details.participants) && details.participants.length > 0) {
+          details.participants.forEach((p) => {
+            const li = document.createElement("li");
+            li.className = "participant-item";
+
+            const contentDiv = document.createElement("div");
+            contentDiv.style.display = "flex";
+            contentDiv.style.alignItems = "center";
+            contentDiv.style.gap = "10px";
+
+            const avatar = document.createElement("span");
+            avatar.className = "avatar-badge";
+            avatar.textContent = p
+              .split(" ")
+              .filter(Boolean)
+              .map((s) => s[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "participant-name";
+            nameSpan.textContent = p;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "&#10005;";
+            deleteBtn.type = "button";
+            deleteBtn.title = "Remover participante";
+            deleteBtn.addEventListener("click", async (e) => {
+              e.preventDefault();
+              await handleDeleteParticipant(name, p);
+            });
+
+            contentDiv.appendChild(avatar);
+            contentDiv.appendChild(nameSpan);
+            li.appendChild(contentDiv);
+            li.appendChild(deleteBtn);
+            participantsListEl.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.className = "no-participants";
+          li.textContent = "Nenhum participante ainda.";
+          participantsListEl.appendChild(li);
+        }
+
+        participantsDiv.appendChild(participantsHeader);
+        participantsDiv.appendChild(participantsListEl);
+        activityCard.appendChild(participantsDiv);
 
         activitiesList.appendChild(activityCard);
 
@@ -62,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
