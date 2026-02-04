@@ -24,42 +24,57 @@ document.addEventListener("DOMContentLoaded", () => {
         const spotsLeft = details.max_participants - details.participants.length;
 
         activityCard.innerHTML = `
-          <h4 style="margin:0 0 6px 0;">${name}</h4>
-          <p style="margin:0 0 6px 0;">${details.description}</p>
-          <p style="margin:0 0 6px 0;"><strong>Horário:</strong> ${details.schedule}</p>
-          <p style="margin:0 0 8px 0;"><strong>Vagas:</strong> ${spotsLeft} restantes</p>
+          <h4 class="activity-title">${name}</h4>
+          <p class="activity-desc">${details.description}</p>
+          <p class="activity-schedule"><strong>Horário:</strong> ${details.schedule}</p>
+          <p class="activity-spots"><strong>Vagas:</strong> ${spotsLeft} restantes</p>
         `;
 
-        // Participants section (prettified with small inline styles)
+        // Participants section (uses CSS classes for styling)
         const participantsDiv = document.createElement("div");
         participantsDiv.className = "participants-section";
-        participantsDiv.style.marginTop = "8px";
 
-        const participantsTitle = document.createElement("h5");
-        participantsTitle.textContent = "Participantes";
-        participantsTitle.style.margin = "0 0 4px 0";
-        participantsTitle.style.fontSize = "0.95em";
+        const participantsHeader = document.createElement("div");
+        participantsHeader.className = "participants-header";
+        participantsHeader.innerHTML = `
+          <h5 class="participants-title">Participantes</h5>
+          <span class="participant-count">${Array.isArray(details.participants) ? details.participants.length : 0}</span>
+        `;
 
         const participantsListEl = document.createElement("ul");
         participantsListEl.className = "participants-list";
-        participantsListEl.style.paddingLeft = "20px";
-        participantsListEl.style.margin = "0";
 
         if (Array.isArray(details.participants) && details.participants.length > 0) {
           details.participants.forEach((p) => {
             const li = document.createElement("li");
-            li.textContent = p;
-            li.style.marginBottom = "2px";
+            li.className = "participant-item";
+
+            const avatar = document.createElement("span");
+            avatar.className = "avatar-badge";
+            avatar.textContent = p
+              .split(" ")
+              .filter(Boolean)
+              .map((s) => s[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "participant-name";
+            nameSpan.textContent = p;
+
+            li.appendChild(avatar);
+            li.appendChild(nameSpan);
             participantsListEl.appendChild(li);
           });
         } else {
           const li = document.createElement("li");
+          li.className = "no-participants";
           li.textContent = "Nenhum participante ainda.";
-          li.style.fontStyle = "italic";
           participantsListEl.appendChild(li);
         }
 
-        participantsDiv.appendChild(participantsTitle);
+        participantsDiv.appendChild(participantsHeader);
         participantsDiv.appendChild(participantsListEl);
         activityCard.appendChild(participantsDiv);
 
