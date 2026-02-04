@@ -130,6 +130,14 @@ section h3 {
   align-items: center;
   gap: 10px;
   color: #0f1724;
+  justify-content: space-between;
+}
+
+.participant-item > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .avatar-badge {
@@ -155,6 +163,28 @@ section h3 {
   font-style: italic;
   color: #64748b;
   padding-left: 2px;
+}
+
+.delete-btn {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.delete-btn:hover {
+  background-color: #c53030;
 }
 
 .form-group {

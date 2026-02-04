@@ -4,6 +4,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // Function to handle participant deletion
+  async function handleDeleteParticipant(activityName, participantEmail) {
+    if (!confirm(`Tem certeza que deseja remover ${participantEmail}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/activities/${encodeURIComponent(activityName)}/unregister?email=${encodeURIComponent(participantEmail)}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (response.ok) {
+        // Refresh activities list
+        fetchActivities();
+      } else {
+        const result = await response.json();
+        alert("Erro ao remover participante: " + (result.detail || "Erro desconhecido"));
+      }
+    } catch (error) {
+      alert("Falha ao remover participante. Por favor, tente novamente.");
+      console.error("Error deleting participant:", error);
+    }
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -49,6 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const li = document.createElement("li");
             li.className = "participant-item";
 
+            const contentDiv = document.createElement("div");
+            contentDiv.style.display = "flex";
+            contentDiv.style.alignItems = "center";
+            contentDiv.style.gap = "10px";
+
             const avatar = document.createElement("span");
             avatar.className = "avatar-badge";
             avatar.textContent = p
@@ -63,8 +95,20 @@ document.addEventListener("DOMContentLoaded", () => {
             nameSpan.className = "participant-name";
             nameSpan.textContent = p;
 
-            li.appendChild(avatar);
-            li.appendChild(nameSpan);
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "&#10005;";
+            deleteBtn.type = "button";
+            deleteBtn.title = "Remover participante";
+            deleteBtn.addEventListener("click", async (e) => {
+              e.preventDefault();
+              await handleDeleteParticipant(name, p);
+            });
+
+            contentDiv.appendChild(avatar);
+            contentDiv.appendChild(nameSpan);
+            li.appendChild(contentDiv);
+            li.appendChild(deleteBtn);
             participantsListEl.appendChild(li);
           });
         } else {
@@ -113,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
